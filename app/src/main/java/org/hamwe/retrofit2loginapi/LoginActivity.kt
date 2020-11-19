@@ -2,11 +2,13 @@ package org.hamwe.retrofit2loginapi
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.google.gson.JsonObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -16,7 +18,7 @@ class LoginActivity : AppCompatActivity() {
     lateinit var edtUsername: EditText
     lateinit var edtPassword: EditText
     private lateinit var btnLogin: Button
-    private lateinit var apiService: ApiService
+    private lateinit var apiServiceInterface: ApiServiceInterface
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -24,7 +26,7 @@ class LoginActivity : AppCompatActivity() {
         edtUsername = findViewById<View>(R.id.edtUsername) as EditText
         edtPassword = findViewById<View>(R.id.edtPassword) as EditText
         btnLogin = findViewById<View>(R.id.btnLogin) as Button
-        apiService = ApiUtils.getApiService()
+        apiServiceInterface = ApiUtils.getApiService(this)
         btnLogin.setOnClickListener {
             val username = edtUsername.text.toString()
             val password = edtPassword.text.toString()
@@ -49,17 +51,22 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun doLogin(username: String, password: String) {
-        val call: Call<ResponseObject> = apiService.login(username, password)
-        call.enqueue(object : Callback<ResponseObject> {
-            override fun onResponse(call: Call<ResponseObject>, response: Response<ResponseObject>) {
+        val logInRequest = LogInRequest(username, password)
+        val call: Call<JsonObject> = apiServiceInterface.login(logInRequest)
+        call.enqueue(object : Callback<JsonObject> {
+            override fun onResponse(
+                call: Call<JsonObject>,
+                response: Response<JsonObject>
+            ) {
                 if (response.isSuccessful) {
-                    val resObj: ResponseObject? = response.body()
-                    if (resObj != null) {
-                        //login start main activity
+                    val jsonObject: JsonObject? = response.body()
+                    if (jsonObject != null) {
+                        Log.d("jsonObject", jsonObject.toString())
                         val intent = Intent(this@LoginActivity, MainActivity::class.java)
                         intent.putExtra("username", username)
                         startActivity(intent)
                     } else {
+                        Log.d("jsonObject", "null")
                         Toast.makeText(
                             this@LoginActivity,
                             "The username or password is incorrect",
@@ -67,6 +74,7 @@ class LoginActivity : AppCompatActivity() {
                         ).show()
                     }
                 } else {
+                    Log.d("jsonObject", response.message())
                     Toast.makeText(
                         this@LoginActivity,
                         "Error! Please try again!",
@@ -75,7 +83,8 @@ class LoginActivity : AppCompatActivity() {
                 }
             }
 
-            override fun onFailure(call: Call<ResponseObject>, t: Throwable) {
+            override fun onFailure(call: Call<JsonObject>, t: Throwable) {
+                Log.d("jsonObject", t.message.toString())
                 Toast.makeText(this@LoginActivity, t.message, Toast.LENGTH_LONG).show()
             }
         })

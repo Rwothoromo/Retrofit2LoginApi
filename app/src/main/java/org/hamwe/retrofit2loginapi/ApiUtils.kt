@@ -1,12 +1,13 @@
 package org.hamwe.retrofit2loginapi
 
+import android.content.Context
 import org.hamwe.retrofit2loginapi.RetrofitClient.getClient
 
 object ApiUtils {
-//    private const val baseUrl = "http://192.168.43.147/demo/"
-    private const val baseUrl = "http://192.168.43.147:8000/"
+    //    private const val baseUrl = "http://<your-ip>:<port>/"
+    private const val baseUrl = "https://weconnect-api-v2-rwothoromo.herokuapp.com/"
 
-    fun getApiService(): ApiService {
-        return getClient(baseUrl)!!.create(ApiService::class.java)
+    fun getApiService(context: Context): ApiServiceInterface {
+        return getClient(baseUrl, context)!!.create(ApiServiceInterface::class.java)
     }
 }

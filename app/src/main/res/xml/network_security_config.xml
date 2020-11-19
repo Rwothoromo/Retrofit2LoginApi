@@ -3,6 +3,9 @@
     <base-config
         cleartextTrafficPermitted="true"
         tools:ignore="InsecureBaseConfiguration">
-        <base includeSubdomains="true">http://192.168.43.147</base>
+        <base includeSubdomains="true">localhost</base>
+        <base includeSubdomains="true">127.0.0.1</base>
+        <base includeSubdomains="true">10.0.2.2</base>
+        <base includeSubdomains="true">10.0.2.16</base>
     </base-config>
 </network-security-config>
